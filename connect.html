@@ -6,66 +6,74 @@
   <style>
     body {
       font-family: Arial, sans-serif;
+      background: #f4f4f9;
       text-align: center;
-      background: #f5f6fa;
-      margin-top: 100px;
+      margin-top: 120px;
     }
+    h1 { color: #333; }
     button {
-      background-color: #ff6f00;
-      color: white;
+      background-color: #ff8c00;
       border: none;
-      padding: 15px 30px;
+      padding: 14px 32px;
+      color: white;
+      font-size: 18px;
       border-radius: 8px;
       cursor: pointer;
-      font-size: 18px;
+      transition: 0.2s;
     }
     button:hover {
-      background-color: #ff8f00;
+      background-color: #ffa733;
     }
-    .status {
+    #status {
       margin-top: 20px;
       font-size: 16px;
-      color: #333;
+      color: #444;
     }
   </style>
 </head>
 <body>
-  <h1>Kết nối ví MetaMask 🔗</h1>
-  <p>Hãy kết nối ví của bạn để tiếp tục tham gia bình chọn.</p>
-  <button onclick="connectWallet()">Kết nối MetaMask</button>
-  <div class="status" id="status"></div>
+  <h1>Kết nối ví MetaMask 🦊</h1>
+  <p>Hãy kết nối ví của bạn để tiếp tục bình chọn.</p>
+  <button id="connectBtn">Kết nối MetaMask</button>
+  <div id="status"></div>
 
+  <!-- ⚠️ Thứ tự nạp script quan trọng -->
   <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js"></script>
   <script>
-    async function connectWallet() {
+    document.getElementById("connectBtn").addEventListener("click", async () => {
+      const statusEl = document.getElementById("status");
+
+      // Kiểm tra MetaMask
       if (typeof window.ethereum === "undefined") {
-        document.getElementById("status").innerText = "⚠️ Bạn chưa cài MetaMask.";
-        alert("Vui lòng cài MetaMask trước khi tiếp tục.");
+        alert("⚠️ Bạn chưa cài MetaMask!");
+        statusEl.innerText = "⚠️ Cần cài đặt MetaMask để tiếp tục.";
         return;
       }
 
       try {
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        // Yêu cầu quyền truy cập ví
+        const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
         await provider.send("eth_requestAccounts", []);
+
         const signer = provider.getSigner();
         const address = await signer.getAddress();
 
-        document.getElementById("status").innerText = "✅ Ví đã kết nối: " + address;
+        console.log("✅ Kết nối ví thành công:", address);
+        statusEl.innerText = "✅ Ví đã kết nối: " + address;
 
-        // Lưu ví vào localStorage để dùng ở trang sau
+        // Lưu địa chỉ để index.html sử dụng
         localStorage.setItem("connectedWallet", address);
 
-        // Chuyển sang trang bình chọn sau 1s
+        // Chuyển sang trang chính
         setTimeout(() => {
           window.location.href = "index.html";
-        }, 1000);
+        }, 1500);
       } catch (err) {
-        console.error(err);
-        document.getElementById("status").innerText = "❌ Lỗi khi kết nối ví!";
-        alert("Không thể kết nối ví. Vui lòng thử lại.");
+        console.error("❌ Lỗi chi tiết:", err);
+        alert("Không thể kết nối MetaMask. Hãy thử reload lại trang.");
+        statusEl.innerText = "❌ Lỗi khi kết nối ví!\n" + (err.message || "Không rõ lỗi");
       }
-    }
+    });
   </script>
 </body>
 </html>
- ethereum
