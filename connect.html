@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Kết nối ví MetaMask</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: #f5f6fa;
+      margin-top: 100px;
+    }
+    button {
+      background-color: #ff6f00;
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 18px;
+    }
+    button:hover {
+      background-color: #ff8f00;
+    }
+    .status {
+      margin-top: 20px;
+      font-size: 16px;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <h1>Kết nối ví MetaMask 🔗</h1>
+  <p>Hãy kết nối ví của bạn để tiếp tục tham gia bình chọn.</p>
+  <button onclick="connectWallet()">Kết nối MetaMask</button>
+  <div class="status" id="status"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js"></script>
+  <script>
+    async function connectWallet() {
+      if (typeof window.ethereum === "undefined") {
+        document.getElementById("status").innerText = "⚠️ Bạn chưa cài MetaMask.";
+        alert("Vui lòng cài MetaMask trước khi tiếp tục.");
+        return;
+      }
+
+      try {
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        await provider.send("eth_requestAccounts", []);
+        const signer = provider.getSigner();
+        const address = await signer.getAddress();
+
+        document.getElementById("status").innerText = "✅ Ví đã kết nối: " + address;
+
+        // Lưu ví vào localStorage để dùng ở trang sau
+        localStorage.setItem("connectedWallet", address);
+
+        // Chuyển sang trang bình chọn sau 1s
+        setTimeout(() => {
+          window.location.href = "index.html";
+        }, 1000);
+      } catch (err) {
+        console.error(err);
+        document.getElementById("status").innerText = "❌ Lỗi khi kết nối ví!";
+        alert("Không thể kết nối ví. Vui lòng thử lại.");
+      }
+    }
+  </script>
+</body>
+</html>
+ ethereum
